@@ -28,9 +28,13 @@ on:
       WRT_PW:
         required: true
         type: string
-      WRT_TEST:
-        default: 'false'
+      WRT_CFG:
         required: false
+        default: 'false'
+        type: string
+      WRT_SHRINK:
+        required: false
+        default: 'false'
         type: string
 
 env:
@@ -43,7 +47,8 @@ env:
   WRT_URL: ${{inputs.WRT_URL}}
   WRT_IP: ${{inputs.WRT_IP}}
   WRT_PW: ${{inputs.WRT_PW}}
-  WRT_TEST: ${{inputs.WRT_TEST}}
+  WRT_CFG: ${{inputs.WRT_CFG}}
+  WRT_SHRINK: ${{inputs.WRT_SHRINK}}
 
 jobs:
   wrt_core:
@@ -60,14 +65,13 @@ jobs:
           remove_haskell: true
           remove_tool_cache: true
           remove_swap: true
-          remove_packages: "android* azure* clang* dotnet* firefox* ghc* golang* google* libclang* libgl1* lld* llvm* \
-            microsoft* mongodb* mono* mysql* nodejs* openjdk* php* postgresql* powershell* snap* temurin* yarn* zulu*"
+          remove_packages: "android* azure* clang* dotnet* firefox* ghc* golang* google* libclang* libgl1* \
+            lld* llvm* microsoft* mongodb* mono* mysql* nodejs* openjdk* php* postgresql* powershell* snap* temurin* yarn* zulu*"
           remove_packages_one_command: true
           remove_folders: "/etc/apt/sources.list.d* /etc/mono* /etc/mysql* /usr/include/linux/android* /usr/lib/llvm* /usr/lib/mono* \
-            /usr/local/lib/android* /usr/local/lib/node_modules* /usr/local/share/chromium* /usr/local/share/powershell* \
-            /usr/local/share/vcpkg/ports/azure* /usr/local/share/vcpkg/ports/google* /usr/local/share/vcpkg/ports/libpq/android* \
-            /usr/local/share/vcpkg/ports/llvm* /usr/local/share/vcpkg/ports/mysql* /usr/local/share/vcpkg/ports/snap* \
-            /usr/share/azure* /usr/share/dotnet* /usr/share/glade* /usr/share/miniconda* /usr/share/php* /usr/share/swift \
+            /usr/local/lib/android* /usr/local/lib/node_modules* /usr/local/share/chromium* /usr/local/share/powershell* /usr/local/share/vcpkg/ports/azure* \
+            /usr/local/share/vcpkg/ports/google* /usr/local/share/vcpkg/ports/libpq/android* /usr/local/share/vcpkg/ports/llvm* /usr/local/share/vcpkg/ports/mysql* \
+            /usr/local/share/vcpkg/ports/snap* /usr/share/azure* /usr/share/dotnet* /usr/share/glade* /usr/share/miniconda* /usr/share/php* /usr/share/swift \
             /var/lib/mysql* /var/log/azure*"
           testing: false
 
@@ -76,21 +80,20 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           docker rmi $(docker images -q)
+          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android $AGENT_TOOLSDIRECTORY
           sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
-          sudo -E apt -yqq update
-          sudo -E apt -yqq full-upgrade
+          sudo -E apt-get -y update
           sudo -E apt-get -y install $(curl -fsSL is.gd/depends_ubuntu_2204)
-          sudo -E apt -yqq autoremove --purge
-          sudo -E apt -yqq autoclean
-          sudo -E apt -yqq clean
           sudo -E systemctl daemon-reload
-          sudo -E timedatectl set-timezone "Asia/Shanghai"
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get -y clean
+          sudo timedatectl set-timezone "$TZ"
 
       - name: Initialization Values
         run: |
           export WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")
           export WRT_REPO=$(basename $GITHUB_WORKSPACE)
-          export WRT_SOURCE=$(echo $WRT_URL | cut -d '/' -f 5-)
+          export WRT_SOURCE=$(echo $WRT_URL | cut -d '/' -f 4)
           export WRT_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Config/$WRT_TARGET.txt)
 
           echo "WRT_DATE=$WRT_DATE" >> $GITHUB_ENV
@@ -106,18 +109,10 @@ jobs:
 
       - name: Check Scripts
         run: |
-          find ./ -maxdepth 3 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
-
-      - name: Check Patches
-        run: |
-          if [ -f "$GITHUB_WORKSPACE/Patches/Patches.sh" ]; then
-            sudo bash $GITHUB_WORKSPACE/Patches/Patches.sh
-          else
-            echo "No patches need to be installed!"
-          fi
+          find ./ -maxdepth 2 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
 
       - name: Check Caches
-        if: env.WRT_TEST != 'true'
+        if: env.WRT_CFG == 'false'
         id: check-cache
         uses: actions/cache@main
         with:
@@ -128,7 +123,7 @@ jobs:
             ./wrt/staging_dir/tool*
 
       - name: Update Caches
-        if: env.WRT_TEST != 'true'
+        if: env.WRT_CFG == 'false'
         run: |
           if ${{steps.check-cache.outputs.cache-hit == 'true'}}; then
             sed -i 's/ $(tool.*\/stamp-compile)//g' ./wrt/Makefile
@@ -149,15 +144,8 @@ jobs:
       - name: Update Feeds
         run: |
           cd ./wrt/
-           $GITHUB_WORKSPACE/Scripts/diy.sh
-          
+          $GITHUB_WORKSPACE/Scripts/diy.sh
 
-      - name: Custom Packages
-        run: |
-          cd ./wrt/package/
-
-          $GITHUB_WORKSPACE/Scripts/Packages.sh
-          $GITHUB_WORKSPACE/Scripts/Handles.sh
 
       - name: Custom Settings
         run: |
@@ -165,21 +153,20 @@ jobs:
 
           rm -rf ./tmp* ./.config*
 
-          cat $GITHUB_WORKSPACE/Config/$WRT_TARGET.txt $GITHUB_WORKSPACE/Config/General.txt >> .config
-
+          cat $GITHUB_WORKSPACE/Config/$WRT_TARGET.txt $GITHUB_WORKSPACE/Config/General.txt $GITHUB_WORKSPACE/Config/Package.txt >> .config
           $GITHUB_WORKSPACE/Scripts/Settings.sh
 
           make defconfig
 
       - name: Download Packages
-        if: env.WRT_TEST != 'true'
+        if: env.WRT_CFG == 'false'
         run: |
           cd ./wrt/
 
           make download -j$(nproc)
 
       - name: Compile Firmware
-        if: env.WRT_TEST != 'true'
+        if: env.WRT_CFG == 'false'
         run: |
           cd ./wrt/
 
@@ -201,10 +188,10 @@ jobs:
         run: |
           cd ./wrt/ && mkdir ./upload/
 
-          cp -f ./.config ./upload/Config_"$WRT_TARGET"_"$WRT_SOURCE"_"$WRT_DATE".txt
+          cp -rf ./.config ./upload/Config_"$WRT_TARGET"_"$WRT_SOURCE"_"$WRT_DATE".txt
 
-          if [[ $WRT_TEST != 'true' ]]; then
-            find ./bin/targets/ -iregex ".*\(buildinfo\|json\|manifest\|sha256sums\|packages\)$" -exec rm -rf {} +
+          if [[ $WRT_CFG == 'false' ]]; then
+            rm -rf $(find ./bin/targets/ -iregex ".*\(buildinfo\|json\|manifest\|sha256sums\|packages\)$")
 
             for TYPE in $WRT_TYPE ; do
               for FILE in $(find ./bin/targets/ -type f -iname "*$TYPE*.*") ; do
@@ -214,8 +201,6 @@ jobs:
                 mv -f $FILE ./upload/$NEW_FILE
               done
             done
-
-            find ./bin/targets/ -type f -exec mv -f {} ./upload/ \;
           fi
 
       - name: Release Firmware
@@ -226,9 +211,7 @@ jobs:
           body: |
             这是个平台固件包，内含多个设备！
             请注意选择你需要的设备固件！
-            不要问，刷就完事了！
-
-            MTK和QCA全系带开源硬件加速，别问了！
+            不要问，更就完事了！
 
             源码：${{env.WRT_SOURCE}}
             平台：${{env.WRT_TARGET}}
