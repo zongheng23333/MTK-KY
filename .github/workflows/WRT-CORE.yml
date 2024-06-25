@@ -71,7 +71,7 @@ jobs:
             /var/lib/mysql* /var/log/azure*"
           testing: false
 
-    - name: Initialization Environment(初始化环境)
+    - name: Initialization Environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
