@@ -76,8 +76,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           docker rmi $(docker images -q)
-          curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh
-          sudo bash  init_build_environment.sh
+          curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh | sudo bash
 
       - name: Initialization Values
         run: |
