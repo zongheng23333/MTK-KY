@@ -8,3 +8,4 @@ cp -rf feeds/smpackage/luci-app-openclash   feeds/luci/applications/luci-app-ope
 
 ./scripts/feeds install -a  
 
+rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
