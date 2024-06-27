@@ -157,8 +157,9 @@ jobs:
       - name: Update Feeds
         run: |
           cd ./wrt/
-
-          $GITHUB_WORKSPACE/Scripts/diy.sh
+          mv $GITHUB_WORKSPACE/Scripts/diy.sh  ./wrt/
+          chmod +x  diy.sh
+          ./diy.sh
 
       - name: Custom Packages
         run: |
