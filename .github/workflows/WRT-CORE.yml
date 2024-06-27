@@ -156,8 +156,8 @@ jobs:
 
       - name: Update Feeds
         run: |
+          cp $GITHUB_WORKSPACE/Scripts/diy.sh  ./wrt/
           cd ./wrt/
-          mv $GITHUB_WORKSPACE/Scripts/diy.sh  ./wrt/
           chmod +x  diy.sh
           ./diy.sh
 
