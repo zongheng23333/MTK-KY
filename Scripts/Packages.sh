@@ -20,6 +20,13 @@ UPDATE_PACKAGE() {
 	fi
 }
 
+#除去padavanonly添加istore应用市场插件
+if [[ $WRT_URL == *"padavanonly"* ]]; then
+	
+else
+	echo "CONFIG_PACKAGE_luci-app-store=y" >> ./.config
+fi
+
 UPDATE_PACKAGE "design" "gngpp/luci-theme-design" "js"
 UPDATE_PACKAGE "design-config" "gngpp/luci-app-design-config" "master"
 UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
