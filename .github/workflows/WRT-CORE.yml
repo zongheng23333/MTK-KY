@@ -158,8 +158,7 @@ jobs:
         run: |
           cd ./wrt/
 
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
+          $GITHUB_WORKSPACE/Scripts/diy.sh
 
       - name: Custom Packages
         run: |
