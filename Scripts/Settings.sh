@@ -33,9 +33,7 @@ if [ -n "$WRT_PACKAGE" ]; then
 	echo "$WRT_PACKAGE" >> ./.config
 fi
 #除去padavanonly添加istore应用市场插件
-if [[ $WRT_URL == *"padavanonly"* ]]; then
-	
-else
-	echo "CONFIG_PACKAGE_luci-app-store=y" >> ./.config
+if [[ $WRT_URL != *"padavanonly"* ]]; then
+echo "CONFIG_PACKAGE_luci-app-store=y" >> ./.config
 fi
 
