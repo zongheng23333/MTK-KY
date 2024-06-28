@@ -5,6 +5,6 @@
 rm -rf feeds/luci/applications/luci-app-openclash
 cp -rf feeds/smpackage/luci-app-openclash   feeds/luci/applications/luci-app-openclash
 
-
+rm -rf feeds/smpackage/luci-app-homeproxy
 
 ./scripts/feeds install -a  
