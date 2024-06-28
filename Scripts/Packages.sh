@@ -26,7 +26,8 @@ UPDATE_PACKAGE "design-config" "gngpp/luci-app-design-config" "master"
 UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
 UPDATE_PACKAGE "argon-config" "jerrykuku/luci-app-argon-config" "master"
 
-UPDATE_PACKAGE "gecoosac" "lwb1978/openwrt-gecoosac" "main"
+UPDATE_PACKAGE "luci-app-homeproxy" "douglarek/luci-app-homeproxy" "dev"
+
 
 #更新软件包版本
 UPDATE_VERSION() {
