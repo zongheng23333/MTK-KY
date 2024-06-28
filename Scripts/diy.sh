@@ -5,6 +5,5 @@
 rm -rf feeds/luci/applications/luci-app-openclash
 cp -rf feeds/smpackage/luci-app-openclash   feeds/luci/applications/luci-app-openclash
 
-rm -rf feeds/smpackage/luci-app-homeproxy
-rm -rf feeds/smpackage/sing-box
+
 ./scripts/feeds install -a  
