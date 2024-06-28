@@ -27,6 +27,7 @@ UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
 UPDATE_PACKAGE "argon-config" "jerrykuku/luci-app-argon-config" "master"
 
 UPDATE_PACKAGE "luci-app-homeproxy" "douglarek/luci-app-homeproxy" "dev"
+UPDATE_PACKAGE "sing-box" "SagerNet/sing-box" "dev-next"
 
 
 #更新软件包版本
