@@ -1,12 +1,8 @@
 #!/bin/bash
-
-sed -i '1i src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
-sed -i '2i src-git small https://github.com/kenzok8/small' feeds.conf.default
+ sed -i '$a src-git smpackage https://github.com/kenzok8/small-package' feeds.conf.default
 ./scripts/feeds update -a
+rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
+rm -rf feeds/smpackage/{luci-app-homeproxy,homeproxy,sing-box,shadowsocks-rust,v2ray-core,v2ray-plugin,v2rayA,Xray-core,xray-plugin}
 
-rm -rf   feeds/kenzo/luci-app-homeproxy
-rm -rf   feeds/kenzo/homeproxy
-rm -rf   feeds/small/sing-box
-rm -rf   feeds/small/shadowsocks-rust
 
 ./scripts/feeds install -a  
