@@ -64,13 +64,3 @@ UPDATE_VERSION() {
         fi
     done
 }
-UPDATE_VERSION "shadowsocks-rust" "shadowsocks/shadowsocks-rust"
-UPDATE_VERSION "sing-box" "SagerNet/sing-box" "true"
-UPDATE_VERSION "tcping" "Mattraks/tcping"
-UPDATE_VERSION "trojan-go" "p4gefau1t/trojan-go"
-UPDATE_VERSION "trojan" "trojan-gfw/trojan"
-UPDATE_VERSION "v2ray-core" "v2fly/v2ray-core"
-UPDATE_VERSION "v2ray-plugin" "teddysun/v2ray-plugin"
-UPDATE_VERSION "v2rayA" "v2rayA/v2rayA"
-UPDATE_VERSION "xray-core" "XTLS/Xray-core"
-UPDATE_VERSION "xray-plugin" "teddysun/xray-plugin"
