@@ -1,13 +1,10 @@
 # OpenWRT-CI
 云编译OpenWRT-mtk固件
 
+云编译CloseWRT固件
 
-# 目录简要说明：
+HANWCKF源码： https://github.com/hanwckf/immortalwrt-mt798x.git
 
-Depends.txt——环境依赖列表
+PADAVANONLY源码： https://github.com/padavanonly/immortalwrt-mt798x.git
 
-workflows——自定义CI配置
-
-Scripts——自定义脚本
-
-Config——自定义配置
+AABANDON源码： https://github.com/Aabandon/immortalwrt-mt798x.git
