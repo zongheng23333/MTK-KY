@@ -6,4 +6,8 @@ cp -rf feeds/smpackage/luci-app-openclash   feeds/luci/applications/luci-app-ope
 
 rm -rf feeds/packages/net/*frp*
 git clone   -b    v0.42.0-1   https://github.com/kuoruan/openwrt-frp.git package/frp
+
+rm -rf feeds/luci/applications/*frp*
+git clone https://github.com/kuoruan/luci-app-frpc  package/luci-app-frpc
+
 ./scripts/feeds install -a  
